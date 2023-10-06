@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title></head>
+<body>
+<h1>Login</h1>
+<form id="loginForm">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required="required"><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required="required"><br>
+    <button type="button" onclick="submitForm()">Login</button>
+</form>
+
+<div id="message"></div>
+
+<script>
+    function submitForm() {
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        var data = {
+            username: username,
+            password: password
+        };
+
+        fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else if (response.status === 401) {
+                    throw new Error('Login fail');
+                } else {
+                    throw new Error('Internal Server Error');
+                }
+            })
+            .then(message => {
+                document.getElementById("message").innerText = message;
+            })
+            .catch(error => {
+                document.getElementById("message").innerText = error.message;
+            });
+    }
+</script>
+</body>
+</html>
